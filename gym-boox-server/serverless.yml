@@ -13,6 +13,10 @@
 
 service: gym-boox-server
 
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -22,8 +26,10 @@ provider:
   runtime: nodejs6.10
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  stage: dev
+  region: eu-west-2
+
+
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -53,9 +59,12 @@ provider:
 #  exclude:
 #    - exclude-me.js
 #    - exclude-me-dir/**
-plugins:
-  - serverless-plugin-typescript
-  - serverless-offline
+
+package:
+  exclude:
+    - node_modules/**/*
+  include:
+    handler.ts
 
 functions:
   hello:
@@ -89,6 +98,11 @@ functions:
 #      - cognitoUserPool:
 #          pool: MyUserPool
 #          trigger: PreSignUp
+
+    events:
+      - http:
+          path: hello
+          method: get
 
 #    Define function environment variables here
 #    environment:
