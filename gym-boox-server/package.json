@@ -1,0 +1,16 @@
+{
+  "name": "gym-boox-server",
+  "version": "1.0.0-alpha.1",
+  "description": "to avoid wife's alarm waking me at 7am, automate booking of her gymbox classes",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joachim Chapman",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "serverless-offline": "^3.20.1",
+    "serverless-plugin-typescript": "^1.1.5"
+  }
+}
