@@ -2,15 +2,24 @@
   "name": "gym-boox-server",
   "version": "1.0.0-alpha.1",
   "description": "to avoid wife's alarm waking me at 7am, automate booking of her gymbox classes",
+  "repository": "https://github.com/lollop-lp/gym-boox/commits/master",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register ./**/*.spec.ts"
   },
   "author": "Joachim Chapman",
   "license": "ISC",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.0",
-    "serverless-offline": "^3.20.1",
-    "serverless-plugin-typescript": "^1.1.5"
+    "@types/chai": "^4.1.3",
+    "@types/mocha": "^5.2.0",
+    "aws-lambda-mock-context": "^3.1.1",
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1",
+    "serverless-offline": "^3.20.3",
+    "serverless-plugin-typescript": "^1.1.5",
+    "ts-node": "^6.0.1"
+  },
+  "dependencies": {
+    "aws-lambda": "^0.1.2"
   }
 }

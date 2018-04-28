@@ -23,7 +23,8 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
+  profile: gym-boox-admin
 
 # you can overwrite defaults here
   stage: dev
