@@ -1,5 +1,10 @@
 declare module "aws-lambda" {
 
+    export interface Response {
+        statusCode: number;
+        body?: string;
+    }
+
     export interface CognitoIdentity {
         cognitoIdentityId: string;
         cognitoIdentityPoolId: string;

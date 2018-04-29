@@ -70,6 +70,19 @@ package:
 functions:
   hello:
     handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+
+  bookPreDefinedClasses:
+    handler: handler.bookPreDefinedClasses
+    events:
+      - schedule: cron(01 06 ? * MON-FRI *) # daylight time
+#      - schedule: cron(01 07 ? * MON-FRI *) # winter time
+      - http:
+          path: bookPreDefinedClasses
+          method: post
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -100,10 +113,8 @@ functions:
 #          pool: MyUserPool
 #          trigger: PreSignUp
 
-    events:
-      - http:
-          path: hello
-          method: get
+
+
 
 #    Define function environment variables here
 #    environment:
