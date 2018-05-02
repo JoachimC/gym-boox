@@ -16,17 +16,15 @@ export namespace Authentication {
             </body>
         </html>`,
         headers: {
-            "Cache-Control": 'private',
-            "Content-Type": 'text/html; "charset=utf-8',
-            "Date": 'Mon, 16 Apr 2018 21:13:28 GMT',
-            "Location": '/enterprise/account/home',
-            "Server": '',
-            "Strict-Transport-Security": 'max-age=3600; includeSubDomains',
-            "X-Powered-By": '',
-            // "Set-Cookie": 'ASP.NET_SessionId=1234567890',
-            // "Set-Cookie": 'Responsive=qwertyuiop',
-            // "Set-Cookie": 'LegendOnlineAffinity=zxcvb',
-            "Set-Cookie": 'ASP.NET_SessionId=1234567890,Responsive=qwertyuiop,LegendOnlineAffinity=zxcvb'
+            'Cache-Control': 'private',
+            'Content-Type': 'text/html; charset=utf-8',
+            'Date': 'Mon, 16 Apr 2018 21:13:28 GMT',
+            'Location': '/enterprise/account/home',
+            'Server': '',
+            'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
+            'X-Powered-By': '',
+            // 'Set-Cookie': ['ASP.NET_SessionId=1234567890', 'Responsive=qwertyuiop', 'LegendOnlineAffinity=zxcvb']
+            'Set-Cookie': 'ASP.NET_SessionId=1234567890,Responsive=qwertyuiop,LegendOnlineAffinity=zxcvb'
         },
         reqheaders: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -56,13 +54,16 @@ export namespace Authentication {
             </body>
         </html>`,
         headers: {
-            "Cache-Control": 'private',
-            "Content-Type": 'text/html; charset=utf-8',
-            "Date": 'Mon, 16 Apr 2018 21:15:54 GMT',
-            "Location": '/enterprise/account/login',
-            "Server": '',
-            "Strict-Transport-Security": 'max-age=3600; includeSubDomains',
-            "X-Powered-By": ''
-        }
+            'Cache-Control': 'private',
+            'Content-Type': 'text/html; charset=utf-8',
+            'Date': 'Mon, 16 Apr 2018 21:15:54 GMT',
+            'Location': '/enterprise/account/login',
+            'Server': '',
+            'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
+            'X-Powered-By': ''
+        },
+        // reqheaders: {
+        //     'Cookie': 'ASP.NET_SessionId=1234567890;Responsive=qwertyuiop;LegendOnlineAffinity=zxcvb;APP_LGD_COOKIE_TEST=true'
+        //
     }
 }

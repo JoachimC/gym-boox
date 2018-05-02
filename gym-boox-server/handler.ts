@@ -10,7 +10,6 @@ const hello: Handler = async (): Promise<Response> => {
     };
 };
 
+const bookPredefinedClasses: Handler = BookPredefinedClassesHttpPort.handle;
 
-const bookPreDefinedClasses: Handler = BookPredefinedClassesHttpPort.handle;
-
-export {hello, bookPreDefinedClasses}
+export {hello, bookPredefinedClasses}

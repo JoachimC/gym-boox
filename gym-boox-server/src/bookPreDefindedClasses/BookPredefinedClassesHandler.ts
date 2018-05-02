@@ -1,17 +1,27 @@
 import * as rp from 'request-promise-native';
 import {CookieJar} from "request";
+import {FullResponse} from "request-promise-native";
 
 interface GymClass {
     Id: number
 }
 
+export interface Credentials {
+    UserName: string,
+    Password: string
+}
+
 export class BookPredefinedClassesHandler {
+    constructor(credentials: Credentials) {
+        this.credentials = credentials
+    }
+
     readonly baseUri = 'https://gymbox.legendonlineservices.co.uk';
+    readonly credentials: Credentials;
 
     public async handle(): Promise<void> {
         const cookiejar = this.configureCookies();
-
-        await this.login(cookiejar);
+        await this.login(cookiejar, this.credentials,);
         const timetable = await this.getTimetable(cookiejar);
         const classToBook = this.findClass(timetable);
         await this.addClassToBasket(cookiejar, classToBook);
@@ -20,18 +30,21 @@ export class BookPredefinedClassesHandler {
     }
 
     private configureCookies(): CookieJar {
-        const cookiejar = rp.jar();
-        cookiejar.setCookie('APP_LGD_COOKIE_TEST=true', this.baseUri);
-        return cookiejar;
+        const cookiejar = rp.jar()
+        const cookie = rp.cookie('APP_LGD_COOKIE_TEST=true')
+        if (cookie) {
+            cookiejar.setCookie(cookie, this.baseUri)
+        }
+        return cookiejar
     }
 
-    private async login(cookiejar: CookieJar) {
+    private async login(cookiejar: CookieJar, credentials: Credentials) {
         const options = {
             method: 'POST',
             uri: `${this.baseUri}/enterprise/account/login`,
             form: {
-                'login.Email': '-email-',
-                'login.Password': '-password-'
+                'login.Email': credentials.UserName,
+                'login.Password': credentials.Password
             },
             headers: {
                 // 'Content-Type': 'application/x-www-form-urlencoded', // set automatically
@@ -45,16 +58,32 @@ export class BookPredefinedClassesHandler {
                 // 'Cookie': 'APP_LGD_COOKIE_TEST=true'
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            cookieJar: cookiejar,
-            simple: false
+            simple: false,
+
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
             if (response.statusCode != 302) {
                 throw new Error('login failed')
             }
+            this.getCookiesFromResponse(response, cookiejar)
         }
         await rp.post(options, callback)
+    }
+
+    private getCookiesFromResponse(response: FullResponse, cookiejar: CookieJar) {
+        var cookies = response.headers["set-cookie"];
+        if (!cookies) return
+
+        if (!(cookies instanceof Array)) {
+            cookies = [cookies]
+        }
+        cookies.forEach((c) => {
+            const cookie = rp.cookie(c)
+            if (cookie) {
+                cookiejar.setCookie(cookie, this.baseUri)
+            }
+        })
     }
 
     private async logout(cookiejar: CookieJar) {
@@ -64,8 +93,7 @@ export class BookPredefinedClassesHandler {
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            cookieJar: cookiejar,
-            simple: false
+            simple: false,
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
@@ -76,14 +104,13 @@ export class BookPredefinedClassesHandler {
         await rp.post(options, callback)
     }
 
-    private async getTimetable(cookiejar: CookieJar) {
+    private async getTimetable(cookiejar: CookieJar):Promise<any> {
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/BookingsCentre/MemberTimetable`,
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            cookieJar: cookiejar,
             simple: false
         };
 
@@ -106,13 +133,16 @@ export class BookPredefinedClassesHandler {
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            cookieJar: cookiejar,
             simple: false
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
             if (response.statusCode != 200) {
                 throw new Error('add class to basket failed')
+            }
+            const responseMessage = JSON.parse(response.body)
+            if (!responseMessage.Success) {
+                throw new Error(`add class to basket failed: ${responseMessage.Message}`)
             }
         }
         return await rp.post(options, callback);
@@ -125,7 +155,6 @@ export class BookPredefinedClassesHandler {
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            cookieJar: cookiejar,
             simple: false
         };
 

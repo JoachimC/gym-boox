@@ -1,11 +1,12 @@
-import 'mocha';
-import {expect} from 'chai';
+import 'mocha'
+import {expect} from 'chai'
 
-import {bookPreDefinedClasses} from "../handler";
-import * as nock from "nock";
-import {Authentication} from "./gym-box-recordings/authentication";
-import {Timetable} from "./gym-box-recordings/timetable";
-import {Basket} from "./gym-box-recordings/basket";
+import {bookPredefinedClasses} from "../handler"
+import {Authentication} from "./gym-box-recordings/authentication"
+import {Timetable} from "./gym-box-recordings/timetable"
+import {Basket} from "./gym-box-recordings/basket"
+import nock = require('nock')
+import {NockDefinition} from "nock"
 
 describe("Book Predefined Classes", () => {
 
@@ -17,33 +18,40 @@ describe("Book Predefined Classes", () => {
     })
 
     // beforeEach(() => {
-    //  nock.activate();
-    // });
+    //  nock.activate()
+    // })
 
     afterEach(() => {
-        nock.cleanAll();
-        // nock.restore();
-    });
+        nock.cleanAll()
+        // nock.restore()
+    })
 
 
     describe("Given a matching class", () => {
 
         it("Then book the class", async function () {
-            nock.define([
-                Authentication.login,
-                Timetable.getTimetable,
-                Basket.addClassToBasket,
-                Basket.pay,
-                Authentication.logout]);
-            const result = await bookPreDefinedClasses();
-            expect(result.statusCode).to.be.equal(200, result.body);
+            const nockDefine = (definition: NockDefinition) => {
+                nock(definition.scope)
+                    .post(definition.path, definition.body, {reqheaders: definition.reqheaders})
+                    .reply(definition.status || 0, definition.response, definition.headers)
+            }
+
+            nockDefine(Authentication.login)
+            nockDefine(Timetable.getTimetable)
+            nockDefine(Basket.addClassToBasket)
+            nockDefine(Basket.pay)
+            nockDefine(Authentication.logout)
+
+            const result = await bookPredefinedClasses()
+            expect(result.statusCode).to.be.equal(200, result.body)
+            nock.isDone()
         });
 
         it("Then don't book the class if it's already been booked")
     });
 
     describe("Given no matching classes", () => {
-        it("Then make no bookings");
+        it("Then make no bookings")
     });
 });
 

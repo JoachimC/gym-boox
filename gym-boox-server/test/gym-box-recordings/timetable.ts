@@ -827,16 +827,16 @@ export namespace Timetable {
     </script>undefined</body>undefined</html>
         `,
         headers: {
-            "Cache-Control": 'private',
-            "Content-Type": 'text/html; "charset=utf-8',
-            "Date": 'Mon, 16 Apr 2018 21:13:59 GMT',
-            "Server": '',
-            "Strict-Transport-Security": 'max-age=3600; includeSubDomains',
-            "Vary":'Accept-Encoding',
-            "X-Powered-By": ''
+            'Cache-Control': 'private',
+            'Content-Type': 'text/html; charset=utf-8',
+            'Date': 'Mon, 16 Apr 2018 21:13:59 GMT',
+            'Server': '',
+            'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
+            'Vary': 'Accept-Encoding',
+            'X-Powered-By': ''
         },
-        reqheaders: {
-            'Cookie': 'ASP.NET_SessionId=1234567890;Responsive=qwertyuiop;LegendOnlineAffinity=zxcvb;APP_LGD_COOKIE_TEST=true'
-        }
+        // reqheaders: {
+        //     'Cookie': 'ASP.NET_SessionId=1234567890;Responsive=qwertyuiop;LegendOnlineAffinity=zxcvb;APP_LGD_COOKIE_TEST=true'
+        // }
     }
 }
