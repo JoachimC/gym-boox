@@ -4,6 +4,8 @@ import {expect} from 'chai';
 import {bookPreDefinedClasses} from "../handler";
 import * as nock from "nock";
 import {Authentication} from "./gym-box-recordings/authentication";
+import {Timetable} from "./gym-box-recordings/timetable";
+import {Basket} from "./gym-box-recordings/basket";
 
 describe("Book Predefined Classes", () => {
 
@@ -27,7 +29,12 @@ describe("Book Predefined Classes", () => {
     describe("Given a matching class", () => {
 
         it("Then book the class", async function () {
-            nock.define([Authentication.login, Authentication.logout]);
+            nock.define([
+                Authentication.login,
+                Timetable.getTimetable,
+                Basket.addClassToBasket,
+                Basket.pay,
+                Authentication.logout]);
             const result = await bookPreDefinedClasses();
             expect(result.statusCode).to.be.equal(200, result.body);
         });

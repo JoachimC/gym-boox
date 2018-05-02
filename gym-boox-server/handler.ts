@@ -1,6 +1,5 @@
 import {Response, Handler} from "aws-lambda";
-import {BookPredefinedClassesHandler} from "./src/bookPreDefindedClasses/BookPreDefindedClassesHandler";
-
+import {BookPredefinedClassesHttpPort} from "./src/bookPreDefindedClasses/BookPredefinedClassesHttpPort";
 
 const hello: Handler = async (): Promise<Response> => {
     return {
@@ -11,21 +10,7 @@ const hello: Handler = async (): Promise<Response> => {
     };
 };
 
-const bookPredefinedClassesHandler = new BookPredefinedClassesHandler();
 
-const bookPreDefinedClasses: Handler = async (): Promise<Response> => {
-    try {
-        await bookPredefinedClassesHandler.handle();
-        return {
-            statusCode: 200
-        }
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(error)
-        }
-    }
-
-};
+const bookPreDefinedClasses: Handler = BookPredefinedClassesHttpPort.handle;
 
 export {hello, bookPreDefinedClasses}
