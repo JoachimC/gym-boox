@@ -72,7 +72,7 @@ export class BookPredefinedClassesHandler {
     }
 
     private getCookiesFromResponse(response: FullResponse, cookiejar: CookieJar) {
-        var cookies = response.headers["set-cookie"];
+        let cookies = response.headers["set-cookie"];
         if (!cookies) return
 
         if (!(cookies instanceof Array)) {
