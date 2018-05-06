@@ -20,6 +20,7 @@ export class BookPredefinedClassesHandler {
     readonly credentials: Credentials;
 
     public async handle(): Promise<void> {
+        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
         const cookiejar = this.configureCookies();
         await this.login(cookiejar, this.credentials,);
         const timetable = await this.getTimetable(cookiejar);
@@ -31,10 +32,10 @@ export class BookPredefinedClassesHandler {
 
     private configureCookies(): CookieJar {
         const cookiejar = rp.jar()
-        const cookie = rp.cookie('APP_LGD_COOKIE_TEST=true')
-        if (cookie) {
-            cookiejar.setCookie(cookie, this.baseUri)
-        }
+        // const cookie = rp.cookie('APP_LGD_COOKIE_TEST=true')
+        // if (cookie) {
+        //     cookiejar.setCookie(cookie, this.baseUri)
+        // }
         return cookiejar
     }
 
@@ -55,11 +56,11 @@ export class BookPredefinedClassesHandler {
                 //Accept-Language:en-GB,en;q=0.5
                 //User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko
                 //Connection:Keep-Alive
-                // 'Cookie': 'APP_LGD_COOKIE_TEST=true'
-                'Cookie': cookiejar.getCookieString(this.baseUri)
+                'Cookie': 'APP_LGD_COOKIE_TEST=true'
+                // 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
             simple: false,
-
+            proxy: "http://127.0.0.1:8888"
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
@@ -111,7 +112,8 @@ export class BookPredefinedClassesHandler {
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
-            simple: false
+            simple: false,
+            proxy: "http://127.0.0.1:8888"
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
@@ -119,7 +121,7 @@ export class BookPredefinedClassesHandler {
                 throw new Error('get timetable failed')
             }
         }
-        return await rp.post(options, callback);
+        return await rp.get(options, callback);
     }
 
     private findClass(timetable: any): GymClass {
@@ -145,7 +147,7 @@ export class BookPredefinedClassesHandler {
                 throw new Error(`add class to basket failed: ${responseMessage.Message}`)
             }
         }
-        return await rp.post(options, callback);
+        return await rp.get(options, callback);
     }
 
     private async pay(cookiejar: CookieJar) {
@@ -163,7 +165,7 @@ export class BookPredefinedClassesHandler {
                 throw new Error('pay failed')
             }
         }
-        return await rp.post(options, callback);
+        return await rp.get(options, callback);
     }
 
 }
