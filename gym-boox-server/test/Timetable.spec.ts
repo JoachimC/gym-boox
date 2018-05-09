@@ -13,6 +13,9 @@ describe("Timetable", () => {
         const gymClasses =  Timetable.parse(timetableRecording.getTimetable.response);
         expect(gymClasses.length).to.be.greaterThan(0);
 
+        const notMondayClasses = gymClasses.filter(x => (x.dayOfWeek !== 'Monday'))
+        expect(notMondayClasses.length).to.be.greaterThan(0);
+
         const bookableGymClasses = gymClasses.filter(x => x.isBookable)
         expect(bookableGymClasses.length).to.be.greaterThan(0);
         expect(gymClasses.length).to.be.greaterThan(bookableGymClasses.length);

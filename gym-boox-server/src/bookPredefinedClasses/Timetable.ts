@@ -5,12 +5,14 @@ export namespace Timetable {
     export const parse = (rawTimetable: any): Array<GymClass> => {
 
         const html = cheerio.load(rawTimetable)
-        let currentDay: string = ''
         return html('table[id="MemberTimetable"] tbody tr')
             .map((i: number, rawRow: any) => {
-                const dayHeader = cheerio.load(rawRow)('tr.dayHeader td h5')
+
+                // not closing around external variable = so need to store this somehow else
+                const row = cheerio.load(rawRow);
+                const dayHeader = row('tr.dayHeader td h5')
                 if (dayHeader.length) {
-                    currentDay = dayHeader.text().split(' ')[0].trim()
+                    cheerio.load(rawRow).attr('data-current-day', dayHeader.text().split(' ')[0].trim())
                 }
                 return rawRow
             })
@@ -20,12 +22,14 @@ export namespace Timetable {
                 const row = cheerio.load(rawRow)
                 const id = row('td span.col5Item a').attr('id').replace('price', '')
                 const name = row('td span.col1Item a').text()
+                const dayOfWeek = row.attr('data-current-day')
                 // todo: just make this a time
                 const hour = Number(row('td span.col0Item').text().substring(0, 2))
                 //todo: what happens with waitlist items?
                 //todo this is always false
-                const isBookable = Boolean(row('td a[href="#"]').length)
-                return {id: id, name: name, dayOfWeek: currentDay, hour: hour, isBookable: isBookable}
+                const rawIsBookable = row('td a[href="#"]');
+                const isBookable = Boolean(rawIsBookable.length)
+                return {id: id, name: name, dayOfWeek: dayOfWeek, hour: hour, isBookable: isBookable}
             })
     }
 
