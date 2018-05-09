@@ -32,6 +32,7 @@ export class BookPredefinedClassesHandler {
     }
 
     private async login(cookiejar: CookieJar, credentials: Credentials) {
+        console.info(`login as '${credentials.UserName}'`)
         const options = {
             method: 'POST',
             uri: `${this.baseUri}/enterprise/account/login`,
@@ -80,6 +81,7 @@ export class BookPredefinedClassesHandler {
     }
 
     private async logout(cookiejar: CookieJar) {
+        console.info(`logout`)
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/Account/Logout`,
@@ -98,6 +100,7 @@ export class BookPredefinedClassesHandler {
     }
 
     private async getTimetable(cookiejar: CookieJar): Promise<any> {
+        console.info(`get timetable`)
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/BookingsCentre/MemberTimetable`,
@@ -124,10 +127,14 @@ export class BookPredefinedClassesHandler {
             .filter(gc => isBookable(gc))
             .filter(Timetable.classFilter)
         // take first class (TODO: return a collection)
-        return matchingGymClasses.pop()
+        matchingGymClasses.forEach(gc => console.info(`found class: ${JSON.stringify(gc)}`))
+        const matchingGymClass = matchingGymClasses[0];
+        console.info(`returning class ${JSON.stringify(matchingGymClass)}`)
+        return matchingGymClass
     }
 
     private async addClassToBasket(cookiejar: CookieJar, classToBook: GymClass) {
+        console.info(`add class '${JSON.stringify(classToBook)}' to basket`)
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/BookingsCentre/AddBooking?booking=${classToBook.id}`,
@@ -150,6 +157,7 @@ export class BookPredefinedClassesHandler {
     }
 
     private async pay(cookiejar: CookieJar) {
+        console.info(`paying`)
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/Basket/Pay`,
