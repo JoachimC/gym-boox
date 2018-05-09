@@ -1,7 +1,7 @@
 export interface GymClass {
     id: number,
     name: string,
-    dayOfWeek: string,
-    hour: number,
-    isBookable: boolean
+    date: string,
+    time: string,
+    status: string
 }

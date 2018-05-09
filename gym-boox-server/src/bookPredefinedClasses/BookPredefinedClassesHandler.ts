@@ -4,6 +4,7 @@ import {CookieJar} from "request";
 import {Credentials} from "./Credentials";
 import {Timetable} from "./Timetable";
 import {GymClass} from "./GymClass";
+import isBookable = Timetable.isBookable;
 
 export class BookPredefinedClassesHandler {
     constructor(credentials: Credentials) {
@@ -120,7 +121,7 @@ export class BookPredefinedClassesHandler {
         const gymClasses = Timetable.parse(rawTimetable)
         // filter for classes
         const matchingGymClasses = gymClasses
-            .filter(gc => gc.isBookable)
+            .filter(gc => isBookable(gc))
             .filter(Timetable.classFilter)
         // take first class (TODO: return a collection)
         return matchingGymClasses.pop()

@@ -3,40 +3,53 @@ import {GymClass} from "./GymClass";
 
 export namespace Timetable {
     export const parse = (rawTimetable: any): Array<GymClass> => {
-
         const html = cheerio.load(rawTimetable)
-        return html('table[id="MemberTimetable"] tbody tr')
-            .map((i: number, rawRow: any) => {
 
-                // not closing around external variable = so need to store this somehow else
-                const row = cheerio.load(rawRow);
-                const dayHeader = row('tr.dayHeader td h5')
-                if (dayHeader.length) {
-                    cheerio.load(rawRow).attr('data-current-day', dayHeader.text().split(' ')[0].trim())
-                }
-                return rawRow
-            })
+        const rows = html('table[id="MemberTimetable"] tbody tr');
+
+        let currentDay: string = ''
+        for (let row of rows.toArray()) {
+            const r = cheerio(row);
+            let candidate = r.find('tr.dayHeader td h5').text().trim()
+            if (candidate.length) {
+                currentDay = candidate;
+            } else {
+                r.attr('data-current-day', currentDay)
+            }
+        }
+
+        const results = rows
             .not('.dayHeader')
             .not('.header')
             .map((i: number, rawRow: any) => {
-                const row = cheerio.load(rawRow)
-                const id = row('td span.col5Item a').attr('id').replace('price', '')
-                const name = row('td span.col1Item a').text()
-                const dayOfWeek = row.attr('data-current-day')
-                // todo: just make this a time
-                const hour = Number(row('td span.col0Item').text().substring(0, 2))
-                //todo: what happens with waitlist items?
-                //todo this is always false
-                const rawIsBookable = row('td a[href="#"]');
-                const isBookable = Boolean(rawIsBookable.length)
-                return {id: id, name: name, dayOfWeek: dayOfWeek, hour: hour, isBookable: isBookable}
-            })
+                const row = cheerio(rawRow)
+                const id = row.find('td span.col5Item a').attr('id').replace('price', '')
+                const name = row.find('td span.col1Item a').text()
+                const date = row.attr('data-current-day')
+                const time = row.find('td span.col0Item').text().trim().substring(0, 5)
+                const status = row.find('td a.col6Item').text();
+                return <GymClass>{id: id, name: name, date: date, time: time, status: status}
+            });
+
+        return results.toArray()
+    }
+
+    export const hourOfClass = (gc: GymClass): Number => {
+        return Number(gc.time.substring(0, 2))
+    }
+
+    export const dayOfClass = (gc: GymClass): string => {
+        return gc.date.split(' ')[0]
+    }
+
+    export const isBookable = (gc: GymClass): boolean => {
+        return gc.status === 'Book'
     }
 
     export const classFilter = (gc: GymClass) => {
-        return (gc.name === 'Ballet Barre' && gc.dayOfWeek === 'Tuesday' && gc.hour === 13) ||
-            (gc.name === 'Aerial Yoga' && gc.dayOfWeek === 'Wednesday' && gc.hour === 13) ||
-            (gc.name === 'Escalate' && gc.dayOfWeek === 'Thursday' && gc.hour === 13) ||
-            (gc.name === 'Vinyasa Flow Yoga' && gc.dayOfWeek === 'Friday' && gc.hour === 13);
+        return (gc.name === 'Ballet Barre' && dayOfClass(gc) === 'Tuesday' && hourOfClass(gc) === 13) ||
+            (gc.name === 'Aerial Yoga' && dayOfClass(gc) === 'Wednesday' && hourOfClass(gc) === 13) ||
+            (gc.name === 'Escalate' && dayOfClass(gc) === 'Thursday' && hourOfClass(gc) === 13) ||
+            (gc.name === 'Vinyasa Flow Yoga' && dayOfClass(gc) === 'Friday' && hourOfClass(gc) === 13);
     }
 }
