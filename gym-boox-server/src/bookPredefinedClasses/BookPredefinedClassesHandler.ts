@@ -15,7 +15,7 @@ export class BookPredefinedClassesHandler {
     readonly credentials: Credentials;
 
     public async handle(): Promise<void> {
-        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+        // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
         const cookiejar = this.configureCookies();
         await this.login(cookiejar, this.credentials,);
         const timetable = await this.getTimetable(cookiejar);
