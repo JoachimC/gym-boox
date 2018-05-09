@@ -52,7 +52,7 @@ export class BookPredefinedClassesHandler {
                 // 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
             simple: false,
-            proxy: "http://127.0.0.1:8888"
+            // proxy: "http://127.0.0.1:8888"
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
@@ -105,7 +105,7 @@ export class BookPredefinedClassesHandler {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },
             simple: false,
-            proxy: "http://127.0.0.1:8888"
+            // proxy: "http://127.0.0.1:8888"
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
