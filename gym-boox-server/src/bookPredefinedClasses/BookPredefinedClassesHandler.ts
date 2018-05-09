@@ -14,25 +14,54 @@ export class BookPredefinedClassesHandler {
     readonly baseUri = 'https://gymbox.legendonlineservices.co.uk';
     readonly credentials: Credentials;
 
+    private wait = (ms: number) => {
+        var start = new Date().getTime();
+        var end = start;
+        while (end < start + ms) {
+            end = new Date().getTime();
+        }
+    }
+
     public async handle(): Promise<void> {
         // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
         const cookiejar = this.configureCookies();
         await this.login(cookiejar, this.credentials,);
+        this.wait(5000)
         const timetable = await this.getTimetable(cookiejar);
         const classToBook = this.findClass(timetable);
         if (classToBook) {
             await this.addClassToBasket(cookiejar, classToBook);
+            this.wait(3000)
             await this.pay(cookiejar);
         }
         await this.logout(cookiejar);
     }
 
-    private configureCookies(): CookieJar {
+    private configureCookies = (): CookieJar => {
         return rp.jar()
+    }
+
+    private standardHeaders = (cookie: string | undefined): any => {
+        const standard: any = {
+            // 'Content-Type': 'application/x-www-form-urlencoded', // set automatically
+            'Referer': `${this.baseUri}/enterprise/account/login`,
+            'Cache-Control': 'no-cache',
+            'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
+            // 'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en-GB,en;q=0.5',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
+            'Connection': 'Keep-Alive'
+        };
+        if (cookie) {
+            standard.Cookie = cookie
+        }
+        return standard
+
     }
 
     private async login(cookiejar: CookieJar, credentials: Credentials) {
         console.info(`login as '${credentials.UserName}'`)
+        let headers = this.standardHeaders('APP_LGD_COOKIE_TEST=true')
         const options = {
             method: 'POST',
             uri: `${this.baseUri}/enterprise/account/login`,
@@ -40,18 +69,7 @@ export class BookPredefinedClassesHandler {
                 'login.Email': credentials.UserName,
                 'login.Password': credentials.Password
             },
-            headers: {
-                // 'Content-Type': 'application/x-www-form-urlencoded', // set automatically
-                'Referer': `${this.baseUri}/enterprise/account/login`,
-                'Cache-Control': 'no-cache',
-                //Accept:text/html, application/xhtml+xml, image/jxr, */*
-                //Accept-Encoding:gzip, deflate
-                //Accept-Language:en-GB,en;q=0.5
-                //User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko
-                //Connection:Keep-Alive
-                'Cookie': 'APP_LGD_COOKIE_TEST=true'
-                // 'Cookie': cookiejar.getCookieString(this.baseUri)
-            },
+            headers: headers,
             simple: false,
             // proxy: "http://127.0.0.1:8888"
         };
@@ -82,12 +100,11 @@ export class BookPredefinedClassesHandler {
 
     private async logout(cookiejar: CookieJar) {
         console.info(`logout`)
+        let headers = this.standardHeaders(cookiejar.getCookieString(this.baseUri))
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/Account/Logout`,
-            headers: {
-                'Cookie': cookiejar.getCookieString(this.baseUri)
-            },
+            headers: headers,
             simple: false,
         };
 
@@ -101,12 +118,11 @@ export class BookPredefinedClassesHandler {
 
     private async getTimetable(cookiejar: CookieJar): Promise<any> {
         console.info(`get timetable`)
+        let headers = this.standardHeaders(cookiejar.getCookieString(this.baseUri))
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/BookingsCentre/MemberTimetable`,
-            headers: {
-                'Cookie': cookiejar.getCookieString(this.baseUri)
-            },
+            headers: headers,
             simple: false,
             // proxy: "http://127.0.0.1:8888"
         };
@@ -120,14 +136,15 @@ export class BookPredefinedClassesHandler {
     }
 
     private findClass(rawTimetable: any): GymClass | undefined {
-        // parse raw timetable
         const gymClasses = Timetable.parse(rawTimetable)
-        // filter for classes
-        const matchingGymClasses = gymClasses
-            .filter(gc => isBookable(gc))
+
+        const bookableClasses = gymClasses
+            .filter(gc => isBookable(gc));
+
+        const matchingGymClasses = bookableClasses
             .filter(Timetable.classFilter)
-        // take first class (TODO: return a collection)
         matchingGymClasses.forEach(gc => console.info(`found class: ${JSON.stringify(gc)}`))
+
         const matchingGymClass = matchingGymClasses[0];
         console.info(`returning class ${JSON.stringify(matchingGymClass)}`)
         return matchingGymClass
@@ -135,12 +152,12 @@ export class BookPredefinedClassesHandler {
 
     private async addClassToBasket(cookiejar: CookieJar, classToBook: GymClass) {
         console.info(`add class '${JSON.stringify(classToBook)}' to basket`)
+        let headers = this.standardHeaders(cookiejar.getCookieString(this.baseUri))
+
         const options = {
             method: 'GET',
-            uri: `${this.baseUri}/enterprise/BookingsCentre/AddBooking?booking=${classToBook.id}`,
-            headers: {
-                'Cookie': cookiejar.getCookieString(this.baseUri)
-            },
+            uri: `${this.baseUri}/enterprise/BookingsCentre/AddBooking?booking=${classToBook.id}&ajax=${Math.random()}`,
+            headers: headers,
             simple: false
         };
 
@@ -158,17 +175,17 @@ export class BookPredefinedClassesHandler {
 
     private async pay(cookiejar: CookieJar) {
         console.info(`paying`)
+        let headers = this.standardHeaders(cookiejar.getCookieString(this.baseUri))
+
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/Basket/Pay`,
-            headers: {
-                'Cookie': cookiejar.getCookieString(this.baseUri)
-            },
+            headers: headers,
             simple: false
         };
 
         const callback = (error: any, response: rp.FullResponse, body: any) => {
-            if (response.statusCode != 302) {
+            if (!(response.statusCode == 302 || response.statusCode == 200)) {
                 throw new Error('pay failed')
             }
         }
