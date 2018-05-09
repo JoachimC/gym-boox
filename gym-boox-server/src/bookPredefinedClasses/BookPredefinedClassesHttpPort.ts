@@ -1,6 +1,7 @@
-import {BookPredefinedClassesHandler, Credentials} from "./BookPredefinedClassesHandler";
+import {BookPredefinedClassesHandler} from "./BookPredefinedClassesHandler";
 import {Response} from "aws-lambda";
 import {env} from "process";
+import {Credentials} from "./Credentials";
 
 const credentials: Credentials = {
     UserName: <string>env.GYM_BOOX_USER_NAME,

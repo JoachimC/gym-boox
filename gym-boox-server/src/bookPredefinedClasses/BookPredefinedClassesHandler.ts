@@ -1,15 +1,9 @@
 import * as rp from 'request-promise-native';
+import {FullResponse} from 'request-promise-native';
 import {CookieJar} from "request";
-import {FullResponse} from "request-promise-native";
-
-interface GymClass {
-    Id: number
-}
-
-export interface Credentials {
-    UserName: string,
-    Password: string
-}
+import {Credentials} from "./Credentials";
+import {Timetable} from "./Timetable";
+import {GymClass} from "./GymClass";
 
 export class BookPredefinedClassesHandler {
     constructor(credentials: Credentials) {
@@ -25,18 +19,15 @@ export class BookPredefinedClassesHandler {
         await this.login(cookiejar, this.credentials,);
         const timetable = await this.getTimetable(cookiejar);
         const classToBook = this.findClass(timetable);
-        await this.addClassToBasket(cookiejar, classToBook);
-        await this.pay(cookiejar);
+        if (classToBook) {
+            await this.addClassToBasket(cookiejar, classToBook);
+            await this.pay(cookiejar);
+        }
         await this.logout(cookiejar);
     }
 
     private configureCookies(): CookieJar {
-        const cookiejar = rp.jar()
-        // const cookie = rp.cookie('APP_LGD_COOKIE_TEST=true')
-        // if (cookie) {
-        //     cookiejar.setCookie(cookie, this.baseUri)
-        // }
-        return cookiejar
+        return rp.jar()
     }
 
     private async login(cookiejar: CookieJar, credentials: Credentials) {
@@ -105,7 +96,7 @@ export class BookPredefinedClassesHandler {
         await rp.post(options, callback)
     }
 
-    private async getTimetable(cookiejar: CookieJar):Promise<any> {
+    private async getTimetable(cookiejar: CookieJar): Promise<any> {
         const options = {
             method: 'GET',
             uri: `${this.baseUri}/enterprise/BookingsCentre/MemberTimetable`,
@@ -121,17 +112,28 @@ export class BookPredefinedClassesHandler {
                 throw new Error('get timetable failed')
             }
         }
-        return await rp.get(options, callback);
+        return await rp.get(options, callback)
     }
 
-    private findClass(timetable: any): GymClass {
-        return {Id: 1060498}
+    private classFilter = (gc: GymClass) => {
+        return (gc.name === '' && gc.dayOfWeek === '' && gc.hour === 13)
+    }
+
+    private findClass(rawTimetable: any): GymClass | undefined {
+        // parse raw timetable
+        const gymClasses = Timetable.parse(rawTimetable)
+        // filter for classes
+        const matchingGymClasses = gymClasses
+            .filter(gc => gc.isBookable)
+            .filter(this.classFilter)
+        // take first class (TODO: return a collection)
+        return matchingGymClasses.pop()
     }
 
     private async addClassToBasket(cookiejar: CookieJar, classToBook: GymClass) {
         const options = {
             method: 'GET',
-            uri: `${this.baseUri}/enterprise/BookingsCentre/AddBooking?booking=${classToBook.Id}`,
+            uri: `${this.baseUri}/enterprise/BookingsCentre/AddBooking?booking=${classToBook.id}`,
             headers: {
                 'Cookie': cookiejar.getCookieString(this.baseUri)
             },

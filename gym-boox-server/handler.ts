@@ -1,5 +1,5 @@
 import {Response, Handler} from "aws-lambda";
-import {BookPredefinedClassesHttpPort} from "./src/bookPreDefindedClasses/BookPredefinedClassesHttpPort";
+import {BookPredefinedClassesHttpPort} from "./src/bookPredefinedClasses/BookPredefinedClassesHttpPort";
 
 const hello: Handler = async (): Promise<Response> => {
     return {
