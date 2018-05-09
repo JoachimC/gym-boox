@@ -25,7 +25,7 @@ provider:
   name: aws
   runtime: nodejs8.10
   profile: gym-boox-admin
-
+  timeout: 15
   stage: dev
   region: eu-west-2
 
