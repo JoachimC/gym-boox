@@ -14,24 +14,22 @@ export class BookPredefinedClassesHandler {
     readonly baseUri = 'https://gymbox.legendonlineservices.co.uk';
     readonly credentials: Credentials;
 
-    private wait = (ms: number) => {
-        var start = new Date().getTime();
-        var end = start;
-        while (end < start + ms) {
-            end = new Date().getTime();
-        }
+    private delay = (milliseconds: number): Promise<number> => {
+        return new Promise<number>(resolve => {
+                setTimeout(() => {  resolve(); }, milliseconds);
+            });
     }
 
     public async handle(): Promise<void> {
         // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
         const cookiejar = this.configureCookies();
         await this.login(cookiejar, this.credentials,);
-        this.wait(5000)
+        await this.delay(5000)
         const timetable = await this.getTimetable(cookiejar);
         const classToBook = this.findClass(timetable);
         if (classToBook) {
             await this.addClassToBasket(cookiejar, classToBook);
-            this.wait(3000)
+            await this.delay(3000)
             await this.pay(cookiejar);
         }
         await this.logout(cookiejar);
