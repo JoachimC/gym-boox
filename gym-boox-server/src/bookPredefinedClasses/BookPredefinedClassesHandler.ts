@@ -115,17 +115,13 @@ export class BookPredefinedClassesHandler {
         return await rp.get(options, callback)
     }
 
-    private classFilter = (gc: GymClass) => {
-        return (gc.name === '' && gc.dayOfWeek === '' && gc.hour === 13)
-    }
-
     private findClass(rawTimetable: any): GymClass | undefined {
         // parse raw timetable
         const gymClasses = Timetable.parse(rawTimetable)
         // filter for classes
         const matchingGymClasses = gymClasses
             .filter(gc => gc.isBookable)
-            .filter(this.classFilter)
+            .filter(Timetable.classFilter)
         // take first class (TODO: return a collection)
         return matchingGymClasses.pop()
     }

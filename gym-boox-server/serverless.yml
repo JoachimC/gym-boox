@@ -76,7 +76,7 @@ functions:
           method: get
 
   bookPreDefinedClasses:
-    handler: handler.bookPreDefinedClasses
+    handler: handler.bookPredefinedClasses
     events:
       - schedule: cron(01 06 ? * MON-FRI *) # daylight time
 #      - schedule: cron(01 07 ? * MON-FRI *) # winter time

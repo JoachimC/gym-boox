@@ -31,7 +31,7 @@ describe("Book Predefined Classes", () => {
 
         it("Then book the class", async function () {
             const nockDefine = (definition: NockDefinition) => {
-                nock(definition.scope)
+                return nock(definition.scope)
                     .post(definition.path, definition.body, {reqheaders: definition.reqheaders})
                     .reply(definition.status || 0, definition.response, definition.headers)
             }
