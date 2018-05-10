@@ -24,12 +24,11 @@ export class BookPredefinedClassesHandler {
         // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
         const cookiejar = this.configureCookies();
         await this.login(cookiejar, this.credentials,);
-        await this.delay(5000)
         const timetable = await this.getTimetable(cookiejar);
         const classToBook = this.findClass(timetable);
         if (classToBook) {
             await this.addClassToBasket(cookiejar, classToBook);
-            await this.delay(3000)
+            await this.delay(2000)
             await this.pay(cookiejar);
         }
         await this.logout(cookiejar);
