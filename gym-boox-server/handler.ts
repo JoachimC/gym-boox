@@ -1,5 +1,6 @@
 import {Response, Handler} from "aws-lambda";
 import {BookPredefinedClassesHttpPort} from "./src/bookPredefinedClasses/BookPredefinedClassesHttpPort";
+import {BookPredefinedClassesCronPort} from "./src/bookPredefinedClasses/BookPredefinedClassesCronPort";
 
 const hello: Handler = async (): Promise<Response> => {
     return {
@@ -10,6 +11,7 @@ const hello: Handler = async (): Promise<Response> => {
     };
 };
 
-const bookPredefinedClasses: Handler = BookPredefinedClassesHttpPort.handle;
+const bookPredefinedClassesHttp: Handler = BookPredefinedClassesHttpPort.handle;
+const bookPredefinedClasses: Handler = BookPredefinedClassesCronPort.handle;
 
-export {hello, bookPredefinedClasses}
+export {hello, bookPredefinedClasses, bookPredefinedClassesHttp}

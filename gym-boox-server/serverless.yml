@@ -53,3 +53,10 @@ functions:
       - http:
           path: bookPreDefinedClasses
           method: post
+
+  bookPreDefinedClassesHttp:
+    handler: handler.bookPredefinedClassesHttp
+    events:
+      - http:
+          path: bookPreDefinedClassesHttp
+          method: post

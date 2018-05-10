@@ -19,6 +19,7 @@ describe("hello", () => {
 });
 
 // describe("Run bookPreDefinedClasses for real", async () => {
-//     await handler.bookPredefinedClasses()
+//     // await handler.bookPredefinedClasses()
+//     await handler.bookPredefinedClassesHttp()
 // });
 

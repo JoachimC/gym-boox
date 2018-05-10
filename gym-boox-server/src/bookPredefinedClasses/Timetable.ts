@@ -1,5 +1,8 @@
 const cheerio = require('cheerio')
 import {GymClass} from "./GymClass";
+import moment from 'moment'
+import 'moment-timezone'
+
 
 export namespace Timetable {
     export const parse = (rawTimetable: any): Array<GymClass> => {
@@ -47,9 +50,13 @@ export namespace Timetable {
     }
 
     export const classFilter = (gc: GymClass) => {
-        return (gc.name === 'Ballet Barre' && dayOfClass(gc) === 'Tuesday' && hourOfClass(gc) === 13) ||
+        const tomorrowDayOfWeekName = moment().tz('Europe/London').add(1, 'days').format('dddd')
+        return dayOfClass(gc) == tomorrowDayOfWeekName && (
+            (gc.name === 'Ballet Barre' && dayOfClass(gc) === 'Tuesday' && hourOfClass(gc) === 13) ||
             (gc.name === 'Aerial Yoga' && dayOfClass(gc) === 'Wednesday' && hourOfClass(gc) === 13) ||
             (gc.name === 'Escalate' && dayOfClass(gc) === 'Thursday' && hourOfClass(gc) === 13) ||
-            (gc.name === 'Vinyasa Flow Yoga' && dayOfClass(gc) === 'Friday' && hourOfClass(gc) === 13);
+            (gc.name === 'Vinyasa Flow Yoga' && dayOfClass(gc) === 'Friday' && hourOfClass(gc) === 13)
+        )
+
     }
 }

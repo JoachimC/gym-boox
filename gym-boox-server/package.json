@@ -23,8 +23,12 @@
     "ts-node": "^6.0.3"
   },
   "dependencies": {
+    "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.5.4",
     "aws-lambda": "^0.1.2",
     "cheerio": "^1.0.0-rc.2",
+    "moment": "^2.22.1",
+    "moment-timezone": "^0.5.16",
     "npm": "^6.0.0",
     "request": "^2.85.0",
     "request-promise-native": "^1.0.5"
