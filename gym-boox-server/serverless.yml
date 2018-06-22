@@ -36,13 +36,6 @@ package:
     handler.ts
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          path: hello
-          method: get
-
   bookPreDefinedClasses:
     handler: handler.bookPredefinedClasses
     events:
